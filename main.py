@@ -54,7 +54,19 @@ print(compl_reverse)
 # Per fare cio bisogna importare l'alfabeto relativo
 from Bio.Seq import IUPAC                             # import va sempre a inizio file per convenzione
 
-my_seq = Seq("AGTACACTGGT", IUPAC.unambiguous_dna)    #(---> VEDI SU)
+dna_seq = Seq("AGTACACTGGT", IUPAC.unambiguous_dna)    #(---> VEDI SU)
+# Inoltre alla creazione della sequenza, il secondo parametro può essere di tipo IPAC.protein per specificare
+# l'immissione di una proteina
+protein_seq = Seq("EVRNAK", IUPAC.protein)
+# Se provassimo a fare una 'concatenazione' tra queste due sequenze, l'interprete ci restituirà errore essendo
+# di tipo diverso    ->    protein_seq + dna_seq il tipo di errore sarà [Incompatible alphabets]
+# Se volessimo fare una cosa del genere, dovremmo utilizzare un alfabeto generico come sotto illustrato
+from Bio.Alphabet import generic_alphabet
+print("-----------------------")
+protein_seq.alphabet = generic_alphabet
+dna_seq.alphabet = generic_alphabet
+print("La somma delle sequenze della proteina e del dna è -> " + (protein_seq + dna_seq))
+print("\n")
 
 # Le sequenze possono essere trattate come comuni stringhe come ad esempio essere iterate in un ciclo e
 # e prenderne la lunghezza
@@ -77,5 +89,33 @@ print(my_seq[-1]) # Ultimo elemento
 # Il secondo tramite la funzionalità dell'import Bio.SeqUtils che ha una serie di funzioni GC pronte per l'utilizzo
 from Bio.SeqUtils import GC
 print(GC(my_seq))
+# Se ad esempio da il 40% di G il suo corrispettivo (ovvero C) avrà anch'esso il 40%
+# il 20% rimanente sarà diviso tra A e T che sarà il 10% ciascuno
 
 # CAPIRE LA DIFFERENZA TRA my_seq[1:7] e my_seq[1::7]
+# nelle slide 0::3 1::3 2::3 vedono stampano i codoni della sequenza
+# es:
+print("-----------------------")
+s = Seq("GATCGATGGGCCTATATAGGATCGAAAATCGC", IUPAC.unambiguous_dna)
+print("La sequenza è -> " + s)
+print("s[0:2]  -> "+s[0:2])
+print("s[0::2] -> "+s[0::2])
+print("\n")
+
+# Per aggiungere o concatenare sequenze si utilizza questo metodo
+# Prima di tutto avremo bisogno del metodo generic_dna che si trova nella classe Bio.Alphabet per non
+# avere problemi di compatibilità
+print("-----------------------")
+from Bio.Alphabet import generic_dna
+list_of_seqs = [Seq("ACGT", generic_dna), Seq("AACC", generic_dna), Seq("GGTT", generic_dna)]
+print("La concatenazione delle sequenze è -> "+ sum(list_of_seqs, Seq("", generic_dna)))
+print("\n")
+
+# Le sequenze possono utilizzare anche metodi di lavoro su stringhe come upper() e lower()
+# in particolare questi possono essere molto utili per effettuare dei match case insensitive
+# cioè dove non si tiene conto della lettera maiuscola o minuscola
+print("-----------------------")
+dna_seq_case = Seq("acgtACGT", generic_dna)
+print("La sequenza di dna è -> " + dna_seq_case)
+print("La sequenza upper()  -> " + dna_seq_case.upper())
+print("La sequenza lower()  -> " + dna_seq_case.lower())
