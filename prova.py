@@ -1,11 +1,7 @@
-from Bio.Seq import Seq
-from Bio import SeqIO
-from Bio.Blast import NCBIWWW
+from Bio import AlignIO
 
-dati = SeqIO.read('sequences.fasta','fasta')
-print(type(dati))
-result = NCBIWWW.qblast("blastn","nt", dati.seq)
-f_result = open("re.xml","w")
-f_result.write(result.read())
-f_result.close()
-result.close()
+with open("sequences/P1Sequences.fasta") as handle:
+    records = AlignIO.parse(handle, "fasta")
+
+    with open("sequences/P1Sequences.phylip", "w") as output_handle:
+        AlignIO.write(records, output_handle, "phylip")
