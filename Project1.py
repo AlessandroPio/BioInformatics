@@ -9,7 +9,7 @@ import os, glob
 import pandas as pd
 
 def writeToFileTree(tree, output_file):
-    Phylo.write(tree, "sequences/" + output_file + "_PyloTree.xml", "phyloxml")
+    Phylo.write(tree, "sequences/" + output_file + "_phylotree.xml", "phyloxml")
 
 def writeToFile(content,file):
     file.write(content + "\n")
@@ -38,13 +38,15 @@ def phylipTrascription(file_name):
 
 def phylogeneticTree(alignments):
     print("|")
+    os.remove("sequences/"+ input_file + "_dot.fasta")
     alignments = AlignIO.read("sequences/" + input_file + ".phylip", "phylip")
     distanceCalculator = DistanceCalculator('identity')
     distanceMatrix = distanceCalculator.get_distance(alignments)
     distanceConstructor = DistanceTreeConstructor()
     tree = distanceConstructor.nj(distanceMatrix)
-    #tree.clade[0, 1].color = "blue"
+    tree.clade[0, 1].color = "blue"
     writeToFileTree(tree, input_file)
+    return tree
 
 def genomeAnalysis(file):
     def conv(item):
@@ -108,6 +110,7 @@ def genomeAnalysis(file):
             except:
                 continue
 
+    file_output.close()
 
        # df['length'] = df[0].apply(conv)
        # df.rename(columns={0: "sequence"}, inplace=True)
@@ -118,6 +121,14 @@ def genomeAnalysis(file):
 
 while True:
 
+    directory = glob.glob("sequences/*.fasta");
+    print("----> File presenti nella directory");
+    print("|")
+    for file in directory:
+        file = file.split("/")[1].split('.')[0];
+        print("| " + file)
+    print("|");
+    print("----")
     print("|")
     input_file = str(input("| File di riferimento -> "))
     input_file = input_file.split('.')[0]
@@ -134,14 +145,12 @@ while True:
         print("| Immettere il nome di un file formato fasta situato in 'sequences/'")
         print("|")
 
-        directory = glob.glob("sequences/*.fasta");
-        print("----> File presenti nella directory");print("|")
-        for file in directory:
-            file = file.split("/")[1].split('.')[0];
-            print("| " + file)
-        print("|");print("----")
 
-phylogeneticTree(phylipTrascription(input_file))  # creo l'albero filogenetico
+tree = phylogeneticTree(phylipTrascription(input_file))  # creo l'albero filogenetico
 genomeAnalysis(input_file)                        # parto con l'analisi genomica delle sequenze
-file.close()
+
+msgbox = input("| Visualizzare L'albero filogenetico delle sequenze? (Y/N) -> ")
+if msgbox.upper() == "Y":
+    Phylo.draw(tree)
+
 print("| Processo terminato!")
