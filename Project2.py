@@ -1,11 +1,15 @@
-import os
+import os, platform
 from itertools import combinations
 
 from Bio import SeqIO, Seq, AlignIO, pairwise2
 from Bio.SeqRecord import SeqRecord
 
 os.chdir("sequences/Project1/")
-os.system("cat Proj1VarIndia.fasta Proj1VarItalia.fasta | awk '/^>/{f=!d[$1];d[$1]=1}f' > sequences.fasta")
+
+if(platform.system() == 'Windows'):
+    os.system("type Proj1VarIndia.fasta Proj1VarItalia.fasta | awk '/^>/{f=!d[$1];d[$1]=1}f' > sequences.fasta")
+else:
+    os.system("cat Proj1VarIndia.fasta Proj1VarItalia.fasta | awk '/^>/{f=!d[$1];d[$1]=1}f' > sequences.fasta")
 
 def align(pair):
     al = pairwise2.align.globalms(pair[0].seq, pair[1].seq, 2, -1, -5, -2)[0]
