@@ -1,53 +1,50 @@
 import os, platform
+import time
 from itertools import combinations
 
-from Bio import SeqIO, Seq, AlignIO, pairwise2
+from Bio import SeqIO, Seq, AlignIO, Align
 from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
 
 os.chdir("sequences/Project1/")
 
-if(platform.system() == 'Windows'):
-    os.system("type Proj1VarIndia.fasta Proj1VarItalia.fasta | awk '/^>/{f=!d[$1];d[$1]=1}f' > sequences.fasta")
-else:
+if(platform.system() != 'Windows'): #type
     os.system("cat Proj1VarIndia.fasta Proj1VarItalia.fasta | awk '/^>/{f=!d[$1];d[$1]=1}f' > sequences.fasta")
 
-def align(pair):
-    al = pairwise2.align.globalms(pair[0].seq, pair[1].seq, 2, -1, -5, -2)[0]
-
+def align(info):
     try:
-        yield SeqRecord(Seq(al[0]), id=pair[0].id, name=pair[0].name, description=f"Score={al[2]}")
-        yield SeqRecord(Seq(al[1]), id=pair[1].id, name=pair[1].name, description=f"Score={al[2]}")
-    except(Exception):
+        alignments = aligner.align(info[0].seq, info[1].seq)
+        alignment.append(SeqRecord(Seq(str(alignments[0])), id=info[0].id, name=info[1].name, description=f"Score={str(alignments.score)}"))
+        alignment.append(SeqRecord(Seq(str(alignments[1])), id=info[1].id, name=info[1].name, description=f"Score={str(alignments.score)}"))
+
+    except(IndexError):
         pass
 
-def getMutation(file):
-    seq_records = AlignIO.read(file + '.phylip', 'phylip')
-    print("-----------------------------------")
-    j = 0
-    while j < len(seq_records):
-        y = 0
-        location = []
-        cont = 0
-        i = 0
-        while i < len(seq_records):
-            if(j != i):
-                while y < len(seq_records[i]):
-                    if(seq_records[i].seq[y] != seq_records[j].seq[y]):
-                        cont += 1
-                        location.append(y)
-                    y += 1
-            i += 1
-        if(cont != len(seq_records[j])):
-            print("Mutation Detected!   (" + str(j) + ")")
-            print("Sequences Id         ->", seq_records[j].id)
-            print("Lenght of sequence   ->", len(seq_records[j]))
-            print("Number of mutations  ->", len(location))
-            print("-----------------------------------")
-        j += 1
+    #SeqIO.write(informations, "output.fasta", "fasta")
 
-with open("output.fasta", "w") as output:
-    for pair in combinations(SeqIO.parse('sequences.fasta', "fasta"), 2):
-        SeqIO.write(align(pair), output, "fasta")
-#phylipTrascription(SeqIO.parse(infile, "fasta"), 2)
-#phylipTrascription('sequences')
-#getMutation('sequences')
+    #print("| Score                   -> " + str(alignments.score))
+    #print("|")
+    #print("| Id Sequence             -> " + str(info[0].id))
+    #print("| Mutation Detected       -> " + str((len(info[0].seq) - int(alignments.score))))
+    #print("| Lenght of sequence      -> " + str(len(info[0].seq)))
+    #print("| ----------------------------")
+    #print("| Id Sequence             -> " + str(info[1].id))
+    #print("| Mutation Detected       -> " + str((len(info[1].seq) - int(alignments.score))))
+    #print("| Lenght of sequence      -> " + str(len(info[1].seq)))
+
+aligner = Align.PairwiseAligner(match_score=1.0)
+
+alignment = [];cont=1
+init_time = time.localtime()
+print("| Start At  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(init_time.tm_sec))
+for combination in combinations(SeqIO.parse("sequences.fasta", "fasta"),2):
+    print(cont)
+    cont+=1
+    #print("-----------------------------------")
+    align(combination)
+    #print("-----------------------------------")
+end_time = time.localtime()
+print("| End At    -> " + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(end_time.tm_sec))
+
+print();print()
+print(len(alignment))
