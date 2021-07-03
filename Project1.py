@@ -7,7 +7,7 @@ from Bio.SeqUtils import ProtParam
 from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
 import os, glob
 import pandas as pd
-
+#tree.clade[0, 1].color = "blue"
 def writeToFileTree(tree, output_file):
     Phylo.write(tree, "sequences/" + output_file + "_phylotree.xml", "phyloxml")
 
@@ -35,16 +35,17 @@ def dotLenght(input_file):
 def phylipTrascription(file_name):
     records = SeqIO.parse("sequences/" + file_name + "_dot.fasta", "fasta")
     SeqIO.write(records, "sequences/" + file_name + ".phylip", "phylip")
-
-def phylogeneticTree(alignments):
+    os.remove(file_name + "_dot.fasta")
     print("|")
-    os.remove("sequences/"+ input_file + "_dot.fasta")
+
+def phylogeneticTree():
     alignments = AlignIO.read("sequences/" + input_file + ".phylip", "phylip")
+
     distanceCalculator = DistanceCalculator('identity')
     distanceMatrix = distanceCalculator.get_distance(alignments)
     distanceConstructor = DistanceTreeConstructor()
     tree = distanceConstructor.nj(distanceMatrix)
-    tree.clade[0, 1].color = "blue"
+
     writeToFileTree(tree, input_file)
     return tree
 
@@ -57,6 +58,9 @@ def genomeAnalysis(file):
             df['sequence_str'] = df[0].apply(to_str)
 
     def getProtein():
+        p_o_i_list = []
+        molecular_weight_list = []
+
         X = ProtParam.ProteinAnalysis(str(record))
         protein_of_interest = X.count_amino_acids()
         p_o_i_list.append(protein_of_interest)
@@ -101,9 +105,6 @@ def genomeAnalysis(file):
         writeToFile("DNA  SEQUENCE         -> " + str(dnaSequence), file_output)
         writeToFile("AMINO ACID            -> " + str(Amino_Acid), file_output);writeToFile("-----------------------------------", file_output)
 
-        p_o_i_list = []
-        molecular_weight_list = []
-
         for record in Proteins[:]:
             try:
                 getProtein()
@@ -146,11 +147,11 @@ while True:
         print("|")
 
 
-tree = phylogeneticTree(phylipTrascription(input_file))  # creo l'albero filogenetico
+tree = phylogeneticTree()  # creo l'albero filogenetico
 genomeAnalysis(input_file)                        # parto con l'analisi genomica delle sequenze
 
-msgbox = input("| Visualizzare L'albero filogenetico delle sequenze? (Y/N) -> ")
-if msgbox.upper() == "Y":
+msg = input("| Visualizzare L'albero filogenetico delle sequenze? (Y/N) -> ")
+if msg.upper() == "Y":
     Phylo.draw(tree)
 
 print("| Processo terminato!")
