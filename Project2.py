@@ -38,10 +38,17 @@ alignment = [];cont=1
 init_time = time.localtime()
 print("| Start At  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(init_time.tm_sec))
 for combination in combinations(SeqIO.parse("sequences.fasta", "fasta"),2):
-    print(cont)
-    cont+=1
     #print("-----------------------------------")
     align(combination)
+    with open("output.fasta", 'w') as f:
+        for p in alignment:
+            if p.id:
+                f.write('>' + p.id + '\n')
+            else:
+                f.write('>probe_%s\n' % p.identifier())
+            f.write(str(p.seq) + '\n')
+    #SeqIO.write(align(combination), "output.fasta", "fasta")
+    break
     #print("-----------------------------------")
 end_time = time.localtime()
 print("| End At    -> " + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(end_time.tm_sec))
