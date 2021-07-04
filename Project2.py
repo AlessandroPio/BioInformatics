@@ -34,13 +34,14 @@ def align(info):
 
 aligner = Align.PairwiseAligner(match_score=1.0)
 
-alignment = [];cont=1
+cont=1
 init_time = time.localtime()
 print("| Start At  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(init_time.tm_sec))
 for combination in combinations(SeqIO.parse("sequences.fasta", "fasta"),2):
     #print("-----------------------------------")
+    alignment = []
     align(combination)
-    with open("output.fasta", 'w') as f:
+    with open("output.fasta", 'a+') as f:
         for p in alignment:
             if p.id:
                 f.write('>' + p.id + '\n')
@@ -48,7 +49,9 @@ for combination in combinations(SeqIO.parse("sequences.fasta", "fasta"),2):
                 f.write('>probe_%s\n' % p.identifier())
             f.write(str(p.seq) + '\n')
     #SeqIO.write(align(combination), "output.fasta", "fasta")
-    break
+    if(cont==2):
+        break
+    cont +=1
     #print("-----------------------------------")
 end_time = time.localtime()
 print("| End At    -> " + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(end_time.tm_sec))
