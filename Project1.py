@@ -6,7 +6,7 @@ from Bio import Seq
 from Bio.SeqUtils import ProtParam
 from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
 import os, glob
-import pandas as pd
+#import pandas as pd
 #tree.clade[0, 1].color = "blue"
 def writeToFileTree(tree, output_file):
     Phylo.write(tree, "sequences/" + output_file + "_phylotree.xml", "phyloxml")
@@ -32,21 +32,22 @@ def dotLenght(input_file):
     with open(output_file, 'w') as f:
         SeqIO.write(records, f, 'fasta')
 
-def phylipTrascription(file_name):
-    records = SeqIO.parse("sequences/" + file_name + "_dot.fasta", "fasta")
-    SeqIO.write(records, "sequences/" + file_name + ".phylip", "phylip")
-    os.remove(file_name + "_dot.fasta")
+def phylipTrascription():
+    records = SeqIO.parse("C:\\Users\\Alessandro\\Desktop\\clustal-omega-1.2.2-win64\\SequencesAligned.fasta", "fasta")
+    SeqIO.write(records, "C:\\Users\\Alessandro\\Desktop\\clustal-omega-1.2.2-win64\\SequencesAligned.phylip", "phylip")
+    #os.remove(file_name + "_dot.fasta")
     print("|")
 
 def phylogeneticTree():
-    alignments = AlignIO.read("sequences/" + input_file + ".phylip", "phylip")
+    alignments = AlignIO.read("C:\\Users\\Alessandro\\Desktop\\clustal-omega-1.2.2-win64\\SequencesAligned.phylip", "phylip")
 
     distanceCalculator = DistanceCalculator('identity')
     distanceMatrix = distanceCalculator.get_distance(alignments)
+    #print(distanceMatrix)
     distanceConstructor = DistanceTreeConstructor()
     tree = distanceConstructor.nj(distanceMatrix)
 
-    writeToFileTree(tree, input_file)
+    #writeToFileTree(tree, input_file)
     return tree
 
 def genomeAnalysis(file):
@@ -120,35 +121,11 @@ def genomeAnalysis(file):
        # print('Total functional proteins:', len(functional_proteins))
        # functional_proteins.describe()
 
-while True:
-
-    directory = glob.glob("sequences/*.fasta");
-    print("----> File presenti nella directory");
-    print("|")
-    for file in directory:
-        file = file.split("/")[1].split('.')[0];
-        print("| " + file)
-    print("|");
-    print("----")
-    print("|")
-    input_file = str(input("| File di riferimento -> "))
-    input_file = input_file.split('.')[0]
-    print("|")
-
-    try:
-        print("| Controllo del file...")
-        dotLenght(input_file)
-        print("| Controllo terminato correttamente")
-        break
-
-    except IOError:
-        print("| File non valido!")
-        print("| Immettere il nome di un file formato fasta situato in 'sequences/'")
-        print("|")
 
 
+phylipTrascription()
 tree = phylogeneticTree()  # creo l'albero filogenetico
-genomeAnalysis(input_file)                        # parto con l'analisi genomica delle sequenze
+#genomeAnalysis("")                        # parto con l'analisi genomica delle sequenze
 
 msg = input("| Visualizzare L'albero filogenetico delle sequenze? (Y/N) -> ")
 if msg.upper() == "Y":
