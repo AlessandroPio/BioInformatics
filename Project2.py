@@ -73,10 +73,10 @@ def align(input_file, output_file, clustal_directory):
 
 def GetInfo(informations):
     data = []
-    data.append(["ID", "SEQUENCE'S LENGTH", "ANNOTATIONS", "DESCRIPTION"])
+    data.append(["ID", "SEQUENCE'S LENGTH", "DESCRIPTION"])
 
     for info in AlignIO.read(informations, 'fasta'):
-        data.append([info.id, len(info.seq), info.annotations, info.description])
+        data.append([info.id, len(info.seq), info.description])
 
     return data
 
@@ -103,12 +103,12 @@ def UPGMAtree(name, distanceMatrix, distanceConstructor):
 
 fields = menu()
 align(fields[0], fields[1], fields[2])
-phylipTrascription(fields[1])
+phylipTrascription(fields[0])
 
 distanceConstructor = DistanceTreeConstructor()
 distanceCalculator = DistanceCalculator('identity')
 alignments = AlignIO.read(fields[1].split(".")[0] + ".phylip", "phylip")
-table = AsciiTable(GetInfo(fields[1]))
+table = AsciiTable(GetInfo(fields[0]))
 print("| DETAILS");print("|")
 print(table.table);print("|")
 
