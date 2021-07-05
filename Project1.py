@@ -1,134 +1,102 @@
-from __future__ import division
-
-from Bio import SeqIO, Phylo
-from Bio import AlignIO
-from Bio import Seq
-from Bio.SeqUtils import ProtParam
-from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
 import os, glob
-#import pandas as pd
-#tree.clade[0, 1].color = "blue"
-def writeToFileTree(tree, output_file):
-    Phylo.write(tree, "sequences/" + output_file + "_phylotree.xml", "phyloxml")
+import time
+from Bio import AlignIO
 
-def writeToFile(content,file):
-    file.write(content + "\n")
 
-def dotLenght(input_file):
+def menu():
+    print("|---------------------------------------------------")
+    print("|")
+    while True:
+        directory_file = str(input("| Enter the working directory                      -> "))
+        try:
+            print("| Checking the directory..")
+            os.chdir(directory_file)
+            print("| Directory controlled!")
+            print("|");break
+        except Exception:
+            print("| ENTER A VALID DIRECTORY!")
+    while True:
+        print("| IMPORTANT!!")
+        clustal_directory = str(input("| Enter the Clustal directory                      -> "))
+        try:
+            print("| Checking the directory..")
+            os.chdir(clustal_directory)
+            print("| Directory controlled!");print("|")
+            print("| Checking the executable..")
+            if "clustalo.exe" in glob.glob("clustalo.exe"):
+                print("| Executable checked!")
+                os.chdir(directory_file); break
+            else:
+                print("| EXECUTABLE MISSING!")
+        except Exception:
+            print("| ENTER A VALID DIRECTORY!")
 
-    records = SeqIO.parse("sequences/" + input_file + ".fasta", 'fasta')
-    records = list(records)  # lunghezza righe dile input per avere un range
-    maxlen = max(len(record.seq) for record in records)
+    while True:
+        print("|"); cont=0
+        input_file = str(input ("| Insert the .fasta format file                    -> "))
+        if input_file in glob.glob("*.fasta"):
+            cont += 1
+        else:
+            print("| FASTA FILE MISSING!")
+        print("| Insert the .fasta output file")
+        output_file = str(input("| (leave blank if you don't want to specify it)    -> "))
+        if not output_file:
+            output_file = "SequencesAligned.fasta"
+            if(output_file in glob.glob("*.fasta")):
+                os.remove(output_file)
+            print("| Base file 'SequenceAligned.fasta' ")
+            print("|")
+        if(input_file in glob.glob("*.fasta")):
+            cont += 1
+            if (cont == 2): break
+        else:
+            print("| ENTER VALID .FASTA INPUT FILE!")
+    print("|---------------------------------------------------")
 
-    # inserisce il - per avere sequenze di stessa lunghezza
-    for record in records:
-        if len(record.seq) != maxlen:
-            sequence = str(record.seq).ljust(maxlen, '-')
-            record.seq = Seq.Seq(sequence)
-    assert all(len(record.seq) == maxlen for record in records)
+    return(input_file, output_file, clustal_directory)
 
-    # scrive su file temporaneo e fa l'allineamento
-    output_file = 'sequences/{}_dot.fasta'.format(os.path.splitext(input_file)[0])
-    with open(output_file, 'w') as f:
-        SeqIO.write(records, f, 'fasta')
+def getMutation(output_file):
+    seq_records = AlignIO.read(output_file, 'fasta')
+    print("|")
+    print("| DETAILS")
+    j = 0
+    while j < len(seq_records):
+        y = 0
+        location = []
+        cont = 0
+        i = 0
+        while i < len(seq_records):
+            if(j != i):
+                while y < len(seq_records[i]):
+                    if(seq_records[i].seq[y] != seq_records[j].seq[y]):
+                        cont += 1
+                        location.append(y)
+                    y += 1
+            i += 1
+        if(cont != len(seq_records[j])):
+            print("| Mutation Detected!   (" + str(j) + ")")
+            print("| Sequences Id         ->", seq_records[j].id)
+            print("| Lenght of sequence   ->", len(seq_records[j]))
+            print("| Number of mutations  ->", len(location))
+            print("|")
+        j += 1
+    print("|---------------------------------------------------")
 
-def phylipTrascription():
-    records = SeqIO.parse("C:\\Users\\Alessandro\\Desktop\\clustal-omega-1.2.2-win64\\SequencesAligned.fasta", "fasta")
-    SeqIO.write(records, "C:\\Users\\Alessandro\\Desktop\\clustal-omega-1.2.2-win64\\SequencesAligned.phylip", "phylip")
-    #os.remove(file_name + "_dot.fasta")
+def align(input_file, output_file, clustal_directory):
+
+    print("|")
+    init_time = time.localtime()
+    print("| Alignment started at  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(init_time.tm_sec))
+    print("|")
+    print("| Alignment in progress...")
+    os.system(clustal_directory + "\clustalo -i " + input_file + " -o " + output_file)
+    print("| Alignment concluded!")
+    print("|")
+    end_time = time.localtime()
+    print("| Alignment concluded at -> " + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(end_time.tm_sec))
     print("|")
 
-def phylogeneticTree():
-    alignments = AlignIO.read("C:\\Users\\Alessandro\\Desktop\\clustal-omega-1.2.2-win64\\SequencesAligned.phylip", "phylip")
 
-    distanceCalculator = DistanceCalculator('identity')
-    distanceMatrix = distanceCalculator.get_distance(alignments)
-    #print(distanceMatrix)
-    distanceConstructor = DistanceTreeConstructor()
-    tree = distanceConstructor.nj(distanceMatrix)
-
-    #writeToFileTree(tree, input_file)
-    return tree
-
-def genomeAnalysis(file):
-    def conv(item):
-        return len(item)
-
-        def to_str(item):
-            return str(item)
-            df['sequence_str'] = df[0].apply(to_str)
-
-    def getProtein():
-        p_o_i_list = []
-        molecular_weight_list = []
-
-        X = ProtParam.ProteinAnalysis(str(record))
-        protein_of_interest = X.count_amino_acids()
-        p_o_i_list.append(protein_of_interest)
-        molecular_weight = X.molecular_weight()
-        molecular_weight_list.append(molecular_weight)
-
-        writeToFile("PROTEIN OF INTEREST         N° -> " + str(protein_of_interest), file_output)
-        writeToFile("AMINO ACIDS PERCENT         N° -> " + str(X.get_amino_acids_percent()), file_output)
-        writeToFile("MOLECULAR WEIGHT            N° -> " + str(X.aromaticity()), file_output)
-        writeToFile("FLEXIBILITY                 N° -> " + str(X.flexibility()), file_output);
-
-        #print("Aromaticity = ", X.aromaticity())
-        #print("Isoelectric point = ", X.isoelectric_point())
-        #print("Secondary structure fraction = ", X.secondary_structure_fraction())
-
-    file_output = open("sequences/" + input_file + "_phylogenetic_analysis.txt", "w+")
-    cont = 0
-    for sequence in SeqIO.parse('sequences/' + file + ".fasta", "fasta"):
-
-        dnaSequence = sequence.seq
-        nucleotide_of_sequence = len(sequence)
-        mRNA = dnaSequence.transcribe()  # Transcribe a DNA sequence into RNA.
-        mRna_lenght = len(mRNA)
-
-        Amino_Acid = mRNA.translate(table=1, cds=False)
-        #print('Amino Acid', Amino_Acid)
-        #print("Length of Protein:", len(Amino_Acid))
-        #print("Length of Original mRNA:", len(mRNA))
-
-        Proteins = Amino_Acid.split('*')  # * is translated stop codon
-        df = pd.DataFrame(Proteins)
-        df.describe()
-        total_protein = len(df)
-
-        cont += 1
-        writeToFile("SEQUENCE           N° -> " + str(sequence.id) + " (" + str(cont) + ")", file_output);writeToFile("-----------------------------------", file_output)
-        writeToFile("NUCLEOTIDE         N° -> " + str(nucleotide_of_sequence), file_output)
-        writeToFile("DNA                N° -> " + str(len(dnaSequence)), file_output)
-        writeToFile("mRNA               N° -> " + str(mRna_lenght), file_output)
-        writeToFile("PROTEIN            N° -> " + str(total_protein), file_output);writeToFile("-----------------------------------", file_output)
-        writeToFile("mRNA SEQUENCE         -> " + str(mRNA), file_output)
-        writeToFile("DNA  SEQUENCE         -> " + str(dnaSequence), file_output)
-        writeToFile("AMINO ACID            -> " + str(Amino_Acid), file_output);writeToFile("-----------------------------------", file_output)
-
-        for record in Proteins[:]:
-            try:
-                getProtein()
-            except:
-                continue
-
-    file_output.close()
-
-       # df['length'] = df[0].apply(conv)
-       # df.rename(columns={0: "sequence"}, inplace=True)
-       # df.head()  # Take only longer than 20
-       # functional_proteins = df.loc[df['length'] >= 20]
-       # print('Total functional proteins:', len(functional_proteins))
-       # functional_proteins.describe()
-
-
-
-phylipTrascription()
-tree = phylogeneticTree()  # creo l'albero filogenetico
-#genomeAnalysis("")                        # parto con l'analisi genomica delle sequenze
-
-msg = input("| Visualizzare L'albero filogenetico delle sequenze? (Y/N) -> ")
-if msg.upper() == "Y":
-    Phylo.draw(tree)
-
-print("| Processo terminato!")
+fields = menu()
+align(fields[0], fields[1], fields[2])
+getMutation(fields[1])
