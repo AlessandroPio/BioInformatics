@@ -1,7 +1,17 @@
 import os, glob
 import time
-from Bio import AlignIO
+from itertools import permutations, combinations
 
+import numpy as np
+from Bio import AlignIO, SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+
+
+class bcolors:
+    SEQUENCE = '\033[93m'
+    MUTATION = '\033[91m'
+    ENDC = '\033[0m'
 
 def menu():
     print("|---------------------------------------------------")
@@ -55,32 +65,50 @@ def menu():
 
     return(input_file, output_file, clustal_directory)
 
-def getMutation(output_file):
-    seq_records = AlignIO.read(output_file, 'fasta')
-    print("|")
-    print("| DETAILS")
-    j = 0
-    while j < len(seq_records):
-        y = 0
-        location = []
-        cont = 0
-        i = 0
-        while i < len(seq_records):
-            if(j != i):
-                while y < len(seq_records[i]):
-                    if(seq_records[i].seq[y] != seq_records[j].seq[y]):
-                        cont += 1
-                        location.append(y)
-                    y += 1
-            i += 1
-        if(cont != len(seq_records[j])):
-            print("| Mutation Detected!   (" + str(j) + ")")
-            print("| Sequences Id         ->", seq_records[j].id)
-            print("| Lenght of sequence   ->", len(seq_records[j]))
-            print("| Number of mutations  ->", len(location))
-            print("|")
-        j += 1
-    print("|---------------------------------------------------")
+def getInfo(ID, records):
+    data = []; i = 0
+    data.append(["ID","SEQUENCES"])
+    for id in ID:
+        data.append([id, records[i].seq])
+        i += 1
+
+    return data
+
+
+def getMutations(output_file):
+    def listToString(s):
+        str1 = ""
+        for ele in s:
+            str1 += ele
+        return str1
+
+    fas = AlignIO.read(output_file, 'fasta')
+    seq_records = np.array(fas)
+
+    #seq_records=[SeqRecord(Seq("AgA"),id="YP_025292.1"), SeqRecord(Seq("CTA"),id="YP_025122.2"), SeqRecord(Seq("GAA"),id="YP_025122.3")]
+    seq_record =np.array(seq_records)
+    res = seq_record.transpose()
+    i=0; currSeq = []
+    while i < len(res):
+        j=0
+        cond = 0
+        while j < len(res[i]) and not cond:
+            z=0
+            while z < len(res[i]):
+                if(j!=z):
+                    if(res[i][j] != res[i][z]):
+                        currSeq.append(res[i])
+                        cond = 1
+                        break
+                z+=1
+            j+=1
+        i += 1
+    original= np.transpose(currSeq)
+
+    i=0
+    while i<len(original):
+        print(bcolors.SEQUENCE + fas[i].id + bcolors.ENDC + " | " + bcolors.MUTATION + listToString(original[i]) + bcolors.ENDC)
+        i += 1
 
 def align(input_file, output_file, clustal_directory):
 
@@ -97,6 +125,8 @@ def align(input_file, output_file, clustal_directory):
     print("|")
 
 
-fields = menu()
-align(fields[0], fields[1], fields[2])
-getMutation(fields[1])
+#fields = menu()
+#align(fields[0], fields[1], fields[2])
+fields=[0,0]
+fields[1]= 'Proj1SequencesAligned.fasta'
+getMutations('/Users/alessandro/Desktop/Universita/3 Anno/BioInformatica/BioInformatics/sequences/Project1/' + fields[1])

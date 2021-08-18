@@ -58,7 +58,6 @@ def menu():
     return(input_file, output_file, clustal_directory)
 
 def align(input_file, output_file, clustal_directory):
-
     print("|")
     init_time = time.localtime()
     print("| Alignment started at  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(init_time.tm_sec))
