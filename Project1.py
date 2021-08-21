@@ -5,7 +5,7 @@ from Bio import AlignIO
 
 class bcolors:
     SEQUENCE = '\033[93m'
-    MUTATION = '\033[91m'
+    #MUTATION = '\033[91m'
     ENDC = '\033[0m'
 
 def menu():
@@ -96,7 +96,7 @@ def getMutations(output_file):
 
     i = 0
     while i < len(original):
-        print(bcolors.SEQUENCE + fas[i].id + bcolors.ENDC + " | " + bcolors.MUTATION + listToString(original[i]) + bcolors.ENDC)
+        print(bcolors.SEQUENCE + fas[i].id + bcolors.ENDC + " | " + listToString(original[i]))  #bcolors.MUTATION + listToString(original[i]) + bcolors.ENDC
         i += 1
 
 def align(input_file, output_file, clustal_directory):
@@ -115,8 +115,6 @@ def align(input_file, output_file, clustal_directory):
     print("|")
 
 
-# fields = menu()
-# align(fields[0], fields[1], fields[2])
-fields = [0, 0]
-fields[1] = 'Proj1SequencesAligned.fasta'
-getMutations('/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project1/' + fields[1])
+fields = menu()
+align(fields[0], fields[1], fields[2])
+getMutations(fields[1])
