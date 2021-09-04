@@ -104,7 +104,7 @@ align(fields[0], fields[1], fields[2])
 phylipTrascription(fields[1])
 
 distanceConstructor = DistanceTreeConstructor()
-distanceCalculator = DistanceCalculator('identity')
+distanceCalculator = DistanceCalculator('blosum62')  #matrice con la quale vengono calcolati gli score
 alignments = AlignIO.read(fields[1].split(".")[0] + ".phylip", "phylip")
 table = AsciiTable(GetInfo(fields[0]))
 print("| DETAILS");print("|")

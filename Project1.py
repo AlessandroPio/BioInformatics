@@ -115,7 +115,7 @@ def align(input_file, output_file, clustal_directory):
     print("|")
 
 
-#fields = menu()
-#align(fields[0], fields[1], fields[2])
-fields = "/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project2/SequencesAligned.fasta"
+fields = menu()
+align(fields[0], fields[1], fields[2])
+#fields = "/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project1/Proj1SequencesAligned.fasta"
 getMutations(fields)
