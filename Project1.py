@@ -5,8 +5,6 @@ from Bio import AlignIO
 #from terminaltables import SingleTable
 from prettytable import PrettyTable, from_html_one, from_html
 
-global directory_file
-
 class bcolors:
     SEQUENCE = '\033[93m'
     FAIL = '\033[91m'
@@ -67,7 +65,7 @@ def menu():
         else:
             print("| " + bcolors.FAIL + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC)
     print("|---------------------------------------------------")
-    return (input_file, output_file, clustal_directory)
+    return (input_file, output_file, clustal_directory, directory_file)
 
 def getMutations(output_file):
     def getIds(output_file):
@@ -117,7 +115,7 @@ def align(input_file, output_file, clustal_directory):
         end_time.tm_sec))
     print("|")
 
-def getTable(pos, data, ids):
+def getTable(pos, data, ids, directory_file):
     def generateCSV(table):
         file = open(directory_file + "/TableMutations.csv", "w")
         file.write(table.get_csv_string())
@@ -143,4 +141,4 @@ align(fields[0], fields[1], fields[2])
 #directory_file = "/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project1/"
 #fields = "/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project1/Proj1SequencesAligned.fasta"
 data, column, ids = getMutations(fields[1])
-getTable(data, column, ids)
+getTable(data, column, ids, fields[3])
