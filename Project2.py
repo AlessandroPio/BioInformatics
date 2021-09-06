@@ -4,6 +4,10 @@ from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstruct
 import os, glob, time
 from terminaltables import AsciiTable
 
+class bcolors:
+    SEQUENCE = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
 
 def menu():
     print("|---------------------------------------------------")
@@ -14,48 +18,52 @@ def menu():
             print("| Checking the directory..")
             os.chdir(directory_file)
             print("| Directory controlled!")
-            print("|");break
+            print("|");
+            break
         except Exception:
-            print("| ENTER A VALID DIRECTORY!")
+            print("| " + bcolors.MUTATION + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
     while True:
         print("| IMPORTANT!!")
         clustal_directory = str(input("| Enter the Clustal directory                      -> "))
         try:
             print("| Checking the directory..")
             os.chdir(clustal_directory)
-            print("| Directory controlled!");print("|")
+            print("| Directory controlled!");
+            print("|")
             print("| Checking the executable..")
+            print("|")
             if "clustalo.exe" in glob.glob("clustalo.exe"):
                 print("| Executable checked!")
-                os.chdir(directory_file); break
+                os.chdir(directory_file);
+                break
             else:
-                print("| EXECUTABLE MISSING!")
+                print("| " + bcolors.MUTATION + "EXECUTABLE MISSING!" + bcolors.ENDC)
         except Exception:
-            print("| ENTER A VALID DIRECTORY!")
+            print("| " + bcolors.MUTATION + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
 
     while True:
-        print("|"); cont=0
-        input_file = str(input ("| Insert the .fasta format file                    -> "))
+        print("|");
+        cont = 0
+        input_file = str(input("| Insert the .fasta format file                    -> "))
         if input_file in glob.glob("*.fasta"):
             cont += 1
         else:
-            print("| FASTA FILE MISSING!")
+            print("| " + bcolors.MUTATION + "FASTA FILE MISSING!" + bcolors.ENDC)
         print("| Insert the .fasta output file")
         output_file = str(input("| (leave blank if you don't want to specify it)    -> "))
         if not output_file:
             output_file = "SequencesAligned.fasta"
-            if(output_file in glob.glob("*.fasta")):
+            if (output_file in glob.glob("*.fasta")):
                 os.remove(output_file)
             print("| Base file 'SequenceAligned.fasta' ")
             print("|")
-        if(input_file in glob.glob("*.fasta")):
+        if (input_file in glob.glob("*.fasta")):
             cont += 1
             if (cont == 2): break
         else:
-            print("| ENTER VALID .FASTA INPUT FILE!")
+            print("| " + bcolors.MUTATION + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC)
     print("|---------------------------------------------------")
-
-    return(input_file, output_file, clustal_directory)
+    return (input_file, output_file, clustal_directory)
 
 def align(input_file, output_file, clustal_directory):
     print("|")

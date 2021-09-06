@@ -2,11 +2,16 @@ import os, glob
 import time
 import numpy as np
 from Bio import AlignIO
+#from terminaltables import SingleTable
+from prettytable import PrettyTable, from_html_one, from_html
+
+global directory_file
 
 class bcolors:
     SEQUENCE = '\033[93m'
-    #MUTATION = '\033[91m'
+    FAIL = '\033[91m'
     ENDC = '\033[0m'
+    OK = '\033[92m'
 
 def menu():
     print("|---------------------------------------------------")
@@ -16,11 +21,11 @@ def menu():
         try:
             print("| Checking the directory..")
             os.chdir(directory_file)
-            print("| Directory controlled!")
+            print("| " + bcolors.OK + "Controlled!" + bcolors.ENDC)
             print("|");
             break
         except Exception:
-            print("| ENTER A VALID DIRECTORY!")
+            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
     while True:
         print("| IMPORTANT!!")
         clustal_directory = str(input("| Enter the Clustal directory                      -> "))
@@ -30,14 +35,15 @@ def menu():
             print("| Directory controlled!");
             print("|")
             print("| Checking the executable..")
+            print("|")
             if "clustalo.exe" in glob.glob("clustalo.exe"):
                 print("| Executable checked!")
                 os.chdir(directory_file);
                 break
             else:
-                print("| EXECUTABLE MISSING!")
+                print("| " + bcolors.FAIL + "EXECUTABLE MISSING!" + bcolors.ENDC)
         except Exception:
-            print("| ENTER A VALID DIRECTORY!")
+            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
 
     while True:
         print("|");
@@ -46,7 +52,7 @@ def menu():
         if input_file in glob.glob("*.fasta"):
             cont += 1
         else:
-            print("| FASTA FILE MISSING!")
+            print("| " + bcolors.FAIL + "FASTA FILE MISSING!" + bcolors.ENDC)
         print("| Insert the .fasta output file")
         output_file = str(input("| (leave blank if you don't want to specify it)    -> "))
         if not output_file:
@@ -59,24 +65,25 @@ def menu():
             cont += 1
             if (cont == 2): break
         else:
-            print("| ENTER VALID .FASTA INPUT FILE!")
+            print("| " + bcolors.FAIL + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC)
     print("|---------------------------------------------------")
     return (input_file, output_file, clustal_directory)
 
 def getMutations(output_file):
-    def listToString(s):
-        str1 = ""
-        for ele in s:
-            str1 += ele
-        return str1
+    def getIds(output_file):
+        ids = []
+        for records in output_file:
+            ids.append(records.id)
 
+        return ids
+
+    print("|"); print("| Calculating Muations...")
     fas = AlignIO.read(output_file, 'fasta')
-    seq_records = np.array(fas)
-    seq_record = np.array(seq_records)
+    seq_record = np.array(fas)
     res = seq_record.transpose()
 
-    i = 0
-    currSeq = []; currMut = []
+    currSeq = []
+    currMut = []; i = 0
     while i < len(res):
         j = 0
         cond = 0
@@ -92,12 +99,8 @@ def getMutations(output_file):
                 z += 1
             j += 1
         i += 1
-    original = np.transpose(currSeq)
 
-    i = 0
-    while i < len(original):
-        print(bcolors.SEQUENCE + fas[i].id + bcolors.ENDC + " | " + listToString(original[i]))  #bcolors.MUTATION + listToString(original[i]) + bcolors.ENDC
-        i += 1
+    return(currMut , list(currSeq), getIds(fas))
 
 def align(input_file, output_file, clustal_directory):
     print("|")
@@ -114,8 +117,30 @@ def align(input_file, output_file, clustal_directory):
         end_time.tm_sec))
     print("|")
 
+def getTable(pos, data, ids):
+    def generateCSV(table):
+        file = open(directory_file + "/TableMutations.csv", "w")
+        file.write(table.get_csv_string())
+        file.close()
+
+    x = PrettyTable()
+    x.add_column("ID", ids)
+    i=0
+
+    while i < len(data):
+        x.add_column(str(pos[i]), data[i])
+        i += 1
+
+    print("| Process ended sucsesfully!"); print("|")
+    print("| Creating a csv file...")
+    generateCSV(x); print("| TableMutations.csv created sucsessfully inside working directory!")
+    print("|"); print("| Printing mutations table...")
+    print("|"); print(x)
+
 
 fields = menu()
 align(fields[0], fields[1], fields[2])
+#directory_file = "/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project1/"
 #fields = "/Users/alessandro/Desktop/Workspace/BioInformatics/sequences/Project1/Proj1SequencesAligned.fasta"
-getMutations(fields)
+data, column, ids = getMutations(fields[1])
+getTable(data, column, ids)
