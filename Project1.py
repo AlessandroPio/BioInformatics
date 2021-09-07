@@ -2,7 +2,7 @@ import os, glob
 import time
 import numpy as np
 from Bio import AlignIO
-from prettytable import PrettyTable, from_html_one, from_html
+from prettytable import PrettyTable
 
 class bcolors:
     SEQUENCE = '\033[93m'
@@ -18,7 +18,7 @@ def menu():
         try:
             print("| Checking the directory..")
             os.chdir(directory_file)
-            print("| " + bcolors.OK + "Controlled!" + bcolors.ENDC)
+            print("| " + bcolors.OK + "Working directory controlled!" + bcolors.ENDC)
             print("|");
             break
         except Exception:
@@ -130,7 +130,7 @@ def getTable(pos, data, ids, directory_file):
     print("| Process ended sucsesfully!"); print("|")
     print("| Creating a csv file...")
     generateCSV(x); print("| " + bcolors.OK + "TableMutations.csv created sucsessfully inside working directory!" + bcolors.ENDC)
-    print("|"); print("| Printing mutations table...")
+    print("|"); print("| " + bcolors.SEQUENCE + "Printing mutations table..." + bcolors.ENDC)
     print("|"); print(x)
 
 

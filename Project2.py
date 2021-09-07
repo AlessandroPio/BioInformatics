@@ -18,7 +18,7 @@ def menu():
         try:
             print("| Checking the directory..")
             os.chdir(directory_file)
-            print("| " + bcolors.OK + "Controlled!" + bcolors.ENDC)
+            print("| " + bcolors.OK + "Working directory controlled!" + bcolors.ENDC)
             print("|");
             break
         except Exception:
@@ -114,7 +114,7 @@ align(fields[0], fields[1], fields[2])
 phylipTrascription(fields[1])
 
 distanceConstructor = DistanceTreeConstructor()
-distanceCalculator = DistanceCalculator('blosum62')  #matrice con la quale vengono calcolati gli score
+distanceCalculator = DistanceCalculator('blosum62')
 alignments = AlignIO.read(fields[1].split(".")[0] + ".phylip", "phylip")
 table = AsciiTable(GetInfo(fields[0]))
 print("| " + bcolors.SEQUENCE + "DETAILS" + bcolors.ENDC);print("|")
