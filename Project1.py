@@ -30,12 +30,12 @@ def menu():
         try:
             print("| Checking the directory..")
             os.chdir(clustal_directory)
-            print("| Directory controlled!");
+            print("| " + bcolors.OK + "Directory controlled!" + bcolors.ENDC)
             print("|")
             print("| Checking the executable..")
             print("|")
             if "clustalo.exe" in glob.glob("clustalo.exe"):
-                print("| Executable checked!")
+                print("| " + bcolors.OK + "Executable checked!" + bcolors.ENDC)
                 os.chdir(directory_file);
                 break
             else:
@@ -57,7 +57,7 @@ def menu():
             output_file = "SequencesAligned.fasta"
             if (output_file in glob.glob("*.fasta")):
                 os.remove(output_file)
-            print("| Base file 'SequenceAligned.fasta' ")
+            print("| " + bcolors.SEQUENCE + "Base file 'SequenceAligned.fasta' " + bcolors.ENDC)
             print("|")
         if (input_file in glob.glob("*.fasta")):
             cont += 1
@@ -103,16 +103,16 @@ def getMutations(output_file):
 def align(input_file, output_file, clustal_directory):
     print("|")
     init_time = time.localtime()
-    print("| Alignment started at  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(
-        init_time.tm_sec))
+    print("| Alignment started at  -> " + bcolors.SEQUENCE + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(
+        init_time.tm_sec) + bcolors.ENDC)
     print("|")
     print("| Alignment in progress...")
     os.system(clustal_directory + "\clustalo -i " + input_file + " -o " + output_file)
-    print("| Alignment concluded!")
+    print("| " + bcolors.OK + "Alignment concluded!" + bcolors.ENDC)
     print("|")
     end_time = time.localtime()
-    print("| Alignment concluded at -> " + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(
-        end_time.tm_sec))
+    print("| Alignment concluded at -> " + bcolors.SEQUENCE + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(
+        end_time.tm_sec) + bcolors.ENDC)
     print("|")
 
 def getTable(pos, data, ids, directory_file):
@@ -131,7 +131,7 @@ def getTable(pos, data, ids, directory_file):
 
     print("| Process ended sucsesfully!"); print("|")
     print("| Creating a csv file...")
-    generateCSV(x); print("| TableMutations.csv created sucsessfully inside working directory!")
+    generateCSV(x); print("| " + bcolors.OK + "TableMutations.csv created sucsessfully inside working directory!" + bcolors.ENDC)
     print("|"); print("| Printing mutations table...")
     print("|"); print(x)
 

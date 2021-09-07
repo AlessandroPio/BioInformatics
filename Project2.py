@@ -8,6 +8,7 @@ class bcolors:
     SEQUENCE = '\033[93m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
+    OK = '\033[92m'
 
 def menu():
     print("|---------------------------------------------------")
@@ -17,29 +18,29 @@ def menu():
         try:
             print("| Checking the directory..")
             os.chdir(directory_file)
-            print("| Directory controlled!")
+            print("| " + bcolors.OK + "Controlled!" + bcolors.ENDC)
             print("|");
             break
         except Exception:
-            print("| " + bcolors.MUTATION + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
     while True:
         print("| IMPORTANT!!")
         clustal_directory = str(input("| Enter the Clustal directory                      -> "))
         try:
             print("| Checking the directory..")
             os.chdir(clustal_directory)
-            print("| Directory controlled!");
+            print("| " + bcolors.OK + "Directory controlled!" + bcolors.ENDC)
             print("|")
             print("| Checking the executable..")
             print("|")
             if "clustalo.exe" in glob.glob("clustalo.exe"):
-                print("| Executable checked!")
+                print("| " + bcolors.OK + "Executable checked!" + bcolors.ENDC)
                 os.chdir(directory_file);
                 break
             else:
-                print("| " + bcolors.MUTATION + "EXECUTABLE MISSING!" + bcolors.ENDC)
+                print("| " + bcolors.FAIL + "EXECUTABLE MISSING!" + bcolors.ENDC)
         except Exception:
-            print("| " + bcolors.MUTATION + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
 
     while True:
         print("|");
@@ -48,34 +49,36 @@ def menu():
         if input_file in glob.glob("*.fasta"):
             cont += 1
         else:
-            print("| " + bcolors.MUTATION + "FASTA FILE MISSING!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "FASTA FILE MISSING!" + bcolors.ENDC)
         print("| Insert the .fasta output file")
         output_file = str(input("| (leave blank if you don't want to specify it)    -> "))
         if not output_file:
             output_file = "SequencesAligned.fasta"
             if (output_file in glob.glob("*.fasta")):
                 os.remove(output_file)
-            print("| Base file 'SequenceAligned.fasta' ")
+            print("| " + bcolors.SEQUENCE + "Base file 'SequenceAligned.fasta' " + bcolors.ENDC)
             print("|")
         if (input_file in glob.glob("*.fasta")):
             cont += 1
             if (cont == 2): break
         else:
-            print("| " + bcolors.MUTATION + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC)
     print("|---------------------------------------------------")
     return (input_file, output_file, clustal_directory)
 
 def align(input_file, output_file, clustal_directory):
     print("|")
     init_time = time.localtime()
-    print("| Alignment started at  -> " + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(init_time.tm_sec))
+    print("| Alignment started at  -> " + bcolors.SEQUENCE + str(init_time.tm_hour) + ":" + str(init_time.tm_min) + ":" + str(
+        init_time.tm_sec) + bcolors.ENDC)
     print("|")
     print("| Alignment in progress...")
     os.system(clustal_directory + "\clustalo -i " + input_file + " -o " + output_file)
-    print("| Alignment concluded!")
+    print("| " + bcolors.OK + "Alignment concluded!" + bcolors.ENDC)
     print("|")
     end_time = time.localtime()
-    print("| Alignment concluded at -> " + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(end_time.tm_sec))
+    print("| Alignment concluded at -> " + bcolors.SEQUENCE + str(end_time.tm_hour) + ":" + str(end_time.tm_min) + ":" + str(
+        end_time.tm_sec) + bcolors.ENDC)
     print("|")
 
 def GetInfo(informations):
@@ -95,7 +98,7 @@ def NJTree(name, distanceMatrix, distanceConstructor):
     NJTree = distanceConstructor.nj(distanceMatrix)
     Phylo.draw(NJTree)
     Phylo.write(NJTree, name.split(".")[0] + "NJTree.xml", "phyloxml")
-    print("| Created " + name.split(".")[0] + "NJTree.xml on your work directory")
+    print("| " + bcolors.OK + "Created " + name.split(".")[0] + "NJTree.xml on your work directory" + bcolors.ENDC)
     print("|")
 
 def UPGMAtree(name, distanceMatrix, distanceConstructor):
@@ -103,7 +106,7 @@ def UPGMAtree(name, distanceMatrix, distanceConstructor):
     UPGMATree = distanceConstructor.upgma(distanceMatrix)
     Phylo.draw(UPGMATree)
     Phylo.write(UPGMATree, name.split(".")[0] + "UPGMATree.xml", "phyloxml")
-    print("| Created " + name.split(".")[0] + "UPGMATree.xml on your work directory")
+    print("| " + bcolors.OK + "Created" + name.split(".")[0] + "UPGMATree.xml on your work directory" + bcolors.ENDC)
     print("|")
 
 
@@ -115,7 +118,7 @@ distanceConstructor = DistanceTreeConstructor()
 distanceCalculator = DistanceCalculator('blosum62')  #matrice con la quale vengono calcolati gli score
 alignments = AlignIO.read(fields[1].split(".")[0] + ".phylip", "phylip")
 table = AsciiTable(GetInfo(fields[0]))
-print("| DETAILS");print("|")
+print("| " + bcolors.SEQUENCE + "DETAILS" + bcolors.ENDC);print("|")
 print(table.table);print("|")
 
 distanceMatrix = distanceCalculator.get_distance(alignments)
@@ -123,5 +126,5 @@ NJTree(fields[1], distanceMatrix, distanceConstructor)
 UPGMAtree(fields[1], distanceMatrix, distanceConstructor)
 
 os.remove(fields[1].split(".")[0] + ".phylip")
-print("| Process finished!")
+print("| " + bcolors.OK + "Process finished!" + bcolors.ENDC)
 print("|---------------------------------------------------")
