@@ -73,7 +73,7 @@ def getMutations(output_file):
 
         return ids
 
-    print("|"); print("| Calculating Muations...")
+    print("| Calculating Muations...")
     fas = AlignIO.read(output_file, 'fasta')
     seq_record = np.array(fas)
     res = seq_record.transpose()
