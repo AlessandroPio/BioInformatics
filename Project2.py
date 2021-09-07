@@ -38,9 +38,9 @@ def menu():
                 os.chdir(directory_file);
                 break
             else:
-                print("| " + bcolors.FAIL + "EXECUTABLE MISSING!" + bcolors.ENDC)
+                print("| " + bcolors.FAIL + "EXECUTABLE MISSING!" + bcolors.ENDC);print("|")
         except Exception:
-            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC);print("|")
 
     while True:
         print("|");
@@ -49,7 +49,7 @@ def menu():
         if input_file in glob.glob("*.fasta"):
             cont += 1
         else:
-            print("| " + bcolors.FAIL + "FASTA FILE MISSING!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "FASTA FILE MISSING!" + bcolors.ENDC);print("|")
         print("| Insert the .fasta output file")
         output_file = str(input("| (leave blank if you don't want to specify it)    -> "))
         if not output_file:
@@ -62,7 +62,7 @@ def menu():
             cont += 1
             if (cont == 2): break
         else:
-            print("| " + bcolors.FAIL + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "ENTER VALID .FASTA INPUT FILE!" + bcolors.ENDC);print("|")
     print("|---------------------------------------------------")
     return (input_file, output_file, clustal_directory)
 
