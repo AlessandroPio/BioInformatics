@@ -22,7 +22,7 @@ def menu():
             print("|");
             break
         except Exception:
-            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC)
+            print("| " + bcolors.FAIL + "ENTER A VALID DIRECTORY!" + bcolors.ENDC);print("|")
     while True:
         print("| IMPORTANT!!")
         clustal_directory = str(input("| Enter the Clustal directory                      -> "))
@@ -32,7 +32,6 @@ def menu():
             print("| " + bcolors.OK + "Directory controlled!" + bcolors.ENDC)
             print("|")
             print("| Checking the executable..")
-            print("|")
             if "clustalo.exe" in glob.glob("clustalo.exe"):
                 print("| " + bcolors.OK + "Executable checked!" + bcolors.ENDC)
                 os.chdir(directory_file);
